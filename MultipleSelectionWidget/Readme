@@ -4,7 +4,7 @@ Step 1: Create the Service Portal Widget
 •	In ServiceNow, create a Service Portal Widget.
 •	Use the XML to import the dummy widget or refer  Todo
 
-![My Image](MultipleSelectionWidget/images/1.png)
+![My Image](images/1.png)
 
 Step 2: Configure the Catalog Item Variable
 
