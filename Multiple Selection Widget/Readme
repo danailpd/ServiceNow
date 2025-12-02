@@ -2,24 +2,25 @@ Guidelines to Use the Custom Multi-Select Widget in Catalog Items
 
 Step 1: Create the Service Portal Widget
 •	In ServiceNow, create a Service Portal Widget.
-•	Use the XML to import the dummy widget or..... Todo
+•	Use the XML to import the dummy widget or refer  Todo
 
 
 Step 2: Configure the Catalog Item Variable
 
   Case 1: Using Predefined Choices
     1.	Go to your catalog item and create a new variable.
-    2.	Select Select Box as the variable type.  
+    2.	Pick "Select Box" as the variable type.  
     3.	At the bottom, create your predefined choices.
-    4.	After creating the choices, change the variable type from Select Box to Custom.
+    4.	After creating the choices, change the variable type from "Select Box" to "Custom" or "Custom with Label".
     5.	Provide the widget name in the Type specifications.
 
 Case 2: Using Scripts to Fetch Choices Dynamically
-    1.	Create a Custom variable and link it to the widget. No question choices are needed.
-    2.	Create a new variable of type Single Line Text.
-    3.	Name this variable the same as the first variable, but add hidden_ at the beginning.
-        -	This ensures the logic associates this variable with the first one.
-    4.	In the hidden variable, provide a script in the Default Value field.
-        -	Example: Call a Script Include that returns filtered options (e.g., filtered licenses).
+    1.	Create a variable with type "Custom" or "Custom with Label".
+    2.	Provide the widget name in the Type specifications.
+    3.	Create a new variable of type Single Line Text.
+    4.	Name this variable the same as the first variable, but add hidden_ at the beginning.
+        •	This ensures the logic associates this variable with the first one.
+    5.	In the hidden variable, provide a script in the Default Value field, which needs to return array of objects containing label and value.
+        •	Example: Call a Script Include that returns filtered options (e.g., filtered licenses). [{label: "TestLabel", value: "test_value"}]
 
 
