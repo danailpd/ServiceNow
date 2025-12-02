@@ -1,8 +1,8 @@
 Guidelines to Use the Custom Multi-Select Widget in Catalog Items
 
 Step 1: Create the Service Portal Widget
-•	In ServiceNow, create a Service Portal Widget.
-•	Use the XML to import the dummy widget or refer  Todo
+    •	In ServiceNow, create a Service Portal Widget.
+    •	Use the XML to import the dummy widget or refer  Todo
 
 
 Step 2: Configure the Catalog Item Variable
