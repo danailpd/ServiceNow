@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<unload unload_date="2025-12-02 16:07:51">
+<sp_widget action="INSERT_OR_UPDATE">
+<category>custom</category>
+<client_script><![CDATA[api.controller = function($scope, $rootScope, $timeout) {
+    var c = this;
+
+    var g_form = $scope.page.g_form;
+    var catItemId = $scope.options.cat_item;
+
+    // Load dynamic choices from server
+    c.server.get({
+        question: $scope.page.field.sys_id,
+        hiddenField: 'hidden_' + $scope.page.field.name,
+        catItemId: catItemId
+    }).then(function(response) {
+        $scope.items = response.data.choices;
+    });
+
+    $scope.isFocused = false;
+    $scope.selected = [];
+    $scope.searchText = "";
+
+    // Function to update field value in ServiceNow as comma-separated string
+    function updateFieldValue() {
+        var values = $scope.selected.map(function(item) {
+            return item.value;
+        });
+        g_form.setValue($scope.page.field.name, values.join(',')); // <--- sets variable value
+    }
+
+    // Add item
+    $scope.addItem = function(item) {
+        var exists = false;
+        for (var i = 0; i < $scope.selected.length; i++) {
+            if ($scope.selected[i].value === item.value) {
+                exists = true;
+                break;
+            }
+        }
+        if (!exists) {
+            $scope.selected.push(item);
+        }
+        $scope.searchText = '';
+        updateFieldValue(); // <-- update actual field
+    };
+
+    // Remove item
+    $scope.removeItem = function(index) {
+        $scope.selected.splice(index, 1);
+        updateFieldValue(); // <-- update actual field
+    };
+
+    // Filter items for dropdown
+    $scope.filteredItems = function() {
+        var filtered = [];
+        for (var i = 0; i < $scope.items.length; i++) {
+            var item = $scope.items[i];
+            var alreadySelected = false;
+            for (var j = 0; j < $scope.selected.length; j++) {
+                if ($scope.selected[j].value === item.value) {
+                    alreadySelected = true;
+                    break;
+                }
+            }
+            if (!alreadySelected &&
+                (!$scope.searchText || item.label.toLowerCase().indexOf($scope.searchText.toLowerCase()) !== -1)) {
+                filtered.push(item);
+            }
+        }
+        return filtered;
+    };
+};]]></client_script>
+<controller_as>c</controller_as>
+<css>.lc-container {
+  position: relative;
+  width: 100%;
+}
+
+.lc-box {
+  display: flex;
+  flex-wrap: wrap;
+  border: 1px solid #8990A0;
+  border-radius: 4px;
+  min-height: 36px;
+  align-items: center;
+  background: white;
+}
+
+.chip {
+  background: #e4e4e4;
+  border: 1px solid #BEC0C4;
+  border-radius: 3px;
+  padding: 1px 3px 1px 6px;
+  margin: 3px 0px 3px 5px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.remove-chip {
+  cursor: pointer;
+  font-weight: bold;
+  margin-right: 6px; /* space between X and text */
+}
+
+.lc-input {
+  border: none;
+  outline: none;
+  flex: 1;
+  min-width: 120px;
+  padding: 4px;
+}
+
+.dropdown-list {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  max-height: 200px;
+  overflow-y: auto;
+  background: white;
+  position: absolute;
+  width: 100%;
+  z-index: 1000;
+}
+
+.dropdown-item {
+  padding: 2px 6px;
+  cursor: pointer;
+  border: 3px solid #fff
+}
+
+.dropdown-item:hover {
+  background: #FEF9F5;
+  border: 3px solid #447685
+}
+
+
+</css>
+<data_table>sp_instance</data_table>
+<demo_data/>
+<description/>
+<docs display_value=""/>
+<field_list/>
+<has_preview>false</has_preview>
+<id>multiple_choice_selection_widget</id>
+<internal>false</internal>
+<link><![CDATA[function link(scope, element, attrs, controller) {
+  
+}]]></link>
+<name>Multiple Choice Selection Widget</name>
+<option_schema/>
+<public>false</public>
+<roles/>
+<script><![CDATA[(function() {
+
+    data.choices = [];
+
+    if (input) {
+
+        var grHiddenVar = new GlideRecord('item_option_new');
+        grHiddenVar.addQuery("cat_item", input.catItemId);
+        grHiddenVar.addQuery("name", input.hiddenField);
+        grHiddenVar.query();
+
+        if (grHiddenVar.next()) {
+
+            var evaluator = new GlideScopedEvaluator();
+            data.choices = evaluator.evaluateScript(grHiddenVar, 'default_value');
+
+        } else {
+
+            var grQuestionChoice = new GlideRecord('question_choice');
+            grQuestionChoice.addQuery("question", input.question);
+            grQuestionChoice.addQuery('inactive', false);
+            grQuestionChoice.orderBy('order');
+            grQuestionChoice.setLimit(100);
+            grQuestionChoice.query();
+            while (grQuestionChoice.next()) {
+                var value = grQuestionChoice.getValue('value');
+                var label = grQuestionChoice.getValue('text');
+
+                var choice = {};
+                choice.label = label;
+                choice.value = value;
+
+                data.choices.push(choice);
+            }
+        }
+    }
+})();]]></script>
+<servicenow>false</servicenow>
+<sys_class_name>sp_widget</sys_class_name>
+<sys_created_by>admin</sys_created_by>
+<sys_created_on>2025-12-02 16:07:01</sys_created_on>
+<sys_id>28dbf80e9369321086c13d5efaba1037</sys_id>
+<sys_mod_count>2</sys_mod_count>
+<sys_name>Multiple Choice Selection Widget</sys_name>
+<sys_package display_value="Global" source="global">global</sys_package>
+<sys_policy/>
+<sys_scope display_value="Global">global</sys_scope>
+<sys_update_name>sp_widget_28dbf80e9369321086c13d5efaba1037</sys_update_name>
+<sys_updated_by>admin</sys_updated_by>
+<sys_updated_on>2025-12-02 16:07:17</sys_updated_on>
+<template><![CDATA[<div class="lc-container">
+  <div class="lc-box" ng-class="{focused: isFocused}">
+    <!-- Chips -->
+    <span ng-repeat="item in selected" class="chip">
+      <i class="fa fa-times remove-chip" ng-mousedown="removeItem($index)"></i>
+      {{ item.label }}
+    </span>
+
+    <!-- Search input -->
+    <input type="text"
+           class="lc-input"
+           ng-model="searchText"
+           ng-focus="isFocused = true"
+           ng-blur="isFocused = false">
+  </div>
+
+  <!-- Dropdown -->
+  <div class="dropdown-list" ng-if="isFocused">
+    <div ng-repeat="item in filteredItems()"
+         class="dropdown-item"
+         ng-mousedown="addItem(item)">
+      {{ item.label }}
+    </div>
+  </div>
+</div>
+
+]]></template>
+</sp_widget>
+</unload>
